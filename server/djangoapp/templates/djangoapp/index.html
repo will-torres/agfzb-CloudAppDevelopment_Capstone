@@ -20,6 +20,22 @@
                 <div class="navbar-header">
                       <a class="navbar-brand" href="#">Top Dog Auto Sales</a>
                 </div>
+                <ul class="nav navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a class="btn btn-link" type="#">({{ user.username }})</a>    
+                        <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <form clas="form-inline" action="{% url 'djangoapp:login' %}", method="POST">
+                        {% csrf_token %}
+                        <input type="text" placeholder="Username" name="username">
+                        <input type="password" placeholder="Password" name="pwd">
+                        <button class="btn btn-primary" type="submit">Login</button>    
+                        <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                    </form>
+                    {% endif %}
+                    </ul>
             </div>
         </nav>
 
