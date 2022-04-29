@@ -10,7 +10,55 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
 
 </head>
-    <body>
-    <!--Add review form here -->
-    </body>
-</html>
+<body>
+<div class="container-fluid">
+    <h3>Add a review about <b>{{dealer.full_name}}</b></h3>
+    <form action="{% url 'djangoapp:add_review' dealer.id%}" method="post">
+        <div class="form-group">
+
+              <div class="mb-3">
+                  <label for="content"><b>Enter the review content: </b></label>
+                  <textarea class="form-control" id="content" name="content" rows="2" required></textarea>
+              </div>
+
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="purchasecheck" id="purchasecheck">
+                  <label class="form-check-label" for="purchasecheck">
+                      Has purchased the car from {{dealer.full_name}} ?
+                  </label>
+                  <label class="text-muted">(select purchased car information below if checked)</label>
+              </div>
+
+              <div class="mb-3">
+                  <label for="car"><b>Select your car (model-type-year):</b></label>
+                  <select name="car" id="car" class="form-select" required>
+                      {% for car in cars %}
+                      <option selected value={{car.id}}>{{car.name}}-{{car.type.name}}-{{ car.year|date:"Y" }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+
+              <div class="mb-3">
+                  <label for="purchasedate"><b>Select Your Purchase Date: </b></label>
+                  <input class="date-own form-control" style="width: 300px;" type="text" name="purchasedate" id="purchasedate">
+              </div>
+
+        </div>
+        {% csrf_token %}
+        <div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </form>
+</div>
+</body>
+
+<script type="text/javascript">
+      $('.date-own').datepicker({
+         format: 'mm/dd/yyyy'
+       });
+ </script>

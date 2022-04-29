@@ -6,36 +6,28 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
     <body>
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Home</a>
-                    <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About Us</a>
-                    <a class="navbar-brand" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                </div>
+        <form action="{% url 'djangoapp:registration' %}" method="post">
+            <div class="container"> <!--Style root div with .container class -->
+              {% csrf_token %}
+              <h1>Sign Up</h1>
+              <hr>
+              <div class="form-group"> <!--Style second div with .form-group class -->
+                  <label for="username"><b>User Name</b></label>
+                  <input type="text" class="form-control" placeholder="Enter User Name: " name="username" required> <!--Style input with .form-control class -->
+                  <label for="firstname"><b>First Name</b></label>
+                  <input type="text" class="form-control" placeholder="Enter First Name: " name="firstname" required> <!--Style input with .form-control class -->
+                  <label for="lastname"><b>Last Name</b></label>
+                  <input type="text" class="form-control" placeholder="Enter Last Name: " name="lastname" required> <!--Style input with .form-control class -->
+                  <label for="psw"><b>Password</b></label>
+                  <input type="password" class="form-control" placeholder="Enter Password: " name="psw" required> <!--Style input with .form-control class -->
+                  {% if message %}
+                  <div class="alert alert-warning"> <!--Style the message paragraph with .alert and .alert-warning class -->
+                      {{ message }}
+                  </div>
+                  {% endif %}
+                  <button class="btn btn-primary" type="submit">Sign up</button> <!--Style button with .btn and .btn-primary class -->
+              </div>
             </div>
-        </nav>
-        
-        <!--Add a registration form here -->
-        <form action="{% url 'djangoapp:registration' %}" method="POST">
-            <div class="container lead mt-5">
-                <h1 class="text-left">Sign Up</h1>
-                <hr>
-                <div>
-                    <label for="username"><b>User Name</b></label>
-                    <input type="text" class="form-control" placeholder="Enter User Name: " name="username" required>
-                    <label for="firstname"><b>First Name</b></label>
-                    <input type="text" class="form-control" placeholder="Enter First Name: " name="firstname" required>
-                    <label for="lastname"><b>Last Name</b></label>
-                    <input type="text" class="form-control" placeholder="Enter Last Name: " name="lastname" required>
-                    <label for="password"><b>Password</b></label>
-                    <input type="password" class="form-control" placeholder="Enter Password: " name="password" required>
-                </div>
-                <div>
-                    {% csrf_token %}
-                    <button class="btn btn-primary mt-3" type="submit">Sign up</button>
-                </div>
-            </div>
-        </form>
+          </form>          
     </body>
 </html>
