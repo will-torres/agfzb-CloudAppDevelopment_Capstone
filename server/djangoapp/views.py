@@ -3,13 +3,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import CarModel, CarMake, CarDealer, DealerReview
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request 
+from .restapis import get_dealers_from_cf, get_dealer_by_id_from_cf, get_dealer_reviews_from_cf, post_request 
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
 import logging
 import json
-from .restapis import get_dealer_by_id_from_cf
+
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ def get_dealerships(request):
 def get_dealer_details(request, id):
     if request.method == "GET":
         context = {}
-        dealer_url = "https://685b664e.us-south.apigw.appdomain.cloud/api/dealership"
+        dealer_url = "https://685b664e.us-south.apigw.appdomain.cloud/api/dealerships"
         dealer = get_dealer_by_id_from_cf(dealer_url, id=id)
         context["dealer"] = dealer
     
