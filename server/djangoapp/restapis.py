@@ -10,7 +10,7 @@ import time
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
 def analyze_review_sentiments(review):
-    api_key = "fG4MeECnf3CEYskAOuTHEc8mR6xod_M_Oa0RTxrypIYH"
+    api_key = "yht4kk7GvLfV9oeC_M28C0zOrpih1zeH66tcDqAysdTg"
     url = "https://api.us-south.natural-language-understanding.watson.cloud.ibm.com/instances/a2ed3d03-416e-4854-bb2e-ff9c27ff515f"
     text = review
     version = '2020-08-01'
