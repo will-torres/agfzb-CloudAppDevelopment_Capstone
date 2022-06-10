@@ -1,6 +1,5 @@
 import requests
 import json
-# import related models here
 from requests.auth import HTTPBasicAuth
 from .models import CarDealer, DealerReview
 from ibm_watson import NaturalLanguageUnderstandingV1
@@ -77,29 +76,38 @@ def get_dealer_by_id_from_cf(url, id):
 # Create a get_dealer_reviews_from_cf method to get reviews by dealer id from a cloud function
 def get_dealer_reviews_from_cf(url, **kwargs):
     results = []
-    dealer_id = kwargs['id']
-    # Call get_request with a URL parameter
-    json_result = get_request(url, dealerId=dealer_id)
+    id = kwargs.get("id")
+    if id:
+        json_result = get_request(url, id=id)
+    else:
+        json_result = get_request(url)
+
     if json_result:
-        # Get the row list in JSON as dealers
-        reviews = json_result["docs"]
-        # For each dealer object
-        for review in reviews:            
-            # Create a DealerReview object with values in `doc` object
-            if review['purchase'] == True:
-                review_obj = DealerReview(car_make=review["car_make"], car_model=review["car_model"],
-                                    car_year=review["car_year"], dealership=review["dealership"],
-                                    name=review["name"], purchase=review["purchase"],
-                                    purchase_date=review["purchase_date"], review=review["review"],
-                                    sentiment = analyze_review_sentiments(review["review"]))
-                results.append(review_obj)
-            else:
-                review_obj = DealerReview(car_make='None', car_model='No car',
-                                    car_year=0, dealership=review["dealership"],
-                                    name=review["name"], purchase=review["purchase"],
-                                    purchase_date='', review=review["review"],
-                                    sentiment = analyze_review_sentiments(review["review"]))
-                results.append(review_obj)
+        reviews = json_result["body"]["data"]["docs"]
+
+        for dealer_review in reviews:
+            #dealer_review = reviews["docs"][0]
+            
+            review_obj = DealerReview(dealership=dealer_review["dealership"],
+                                        name=dealer_review["name"],
+                                        purchase=dealer_review["purchase"],
+                                        review=dealer_review["review"])
+            if "id" in dealer_review:
+                review_obj.id = dealer_review["id"]
+            if "purchase_date" in dealer_review:
+                review_obj.purchase_date = dealer_review["purchase_date"]
+            if "car_make" in dealer_review:
+                review_obj.car_make = dealer_review["car_make"]
+            if "car_model" in dealer_review:
+                review_obj.car_model = dealer_review["car_model"]
+            if "car_year" in dealer_review:
+                review_obj.car_year = dealer_review["car_year"]
+            
+            sentiment = analyze_review_sentiments(review_obj.review)
+            print(sentiment)
+            review_obj.sentiment = sentiment
+            results.append(review_obj)
+
     return results
 
 # Create a `get_request` to make HTTP GET requests
