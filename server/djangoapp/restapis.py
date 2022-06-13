@@ -64,7 +64,7 @@ def get_dealer_by_id_from_cf(url, id):
     if json_result:
         dealers = json_result["body"]
         
-    
+        
         dealer_doc = dealers["docs"][0]
         dealer_obj = CarDealer(address=dealer_doc["address"], city=dealer_doc["city"], full_name=dealer_doc["full_name"],
                                    id=dealer_doc["id"], lat=dealer_doc["lat"], long=dealer_doc["long"],
@@ -74,7 +74,7 @@ def get_dealer_by_id_from_cf(url, id):
 
 
 # Create a get_dealer_reviews_from_cf method to get reviews by dealer id from a cloud function
-def get_dealer_reviews_from_cf(url, **kwargs):
+'''def get_dealer_reviews_from_cf(url, **kwargs):
     results = []
     id = kwargs.get("id")
     if id:
@@ -83,10 +83,10 @@ def get_dealer_reviews_from_cf(url, **kwargs):
         json_result = get_request(url)
 
     if json_result:
-        reviews = json_result["body"]["data"]["docs"]
+        reviews = json_result["body"]["data"]#["docs"]
 
         for dealer_review in reviews:
-            #dealer_review = reviews["docs"][0]
+            dealer_review = reviews["docs"][0]
             
             review_obj = DealerReview(dealership=dealer_review["dealership"],
                                         name=dealer_review["name"],
@@ -108,7 +108,37 @@ def get_dealer_reviews_from_cf(url, **kwargs):
             review_obj.sentiment = sentiment
             results.append(review_obj)
 
+    return results'''
+
+def get_dealer_reviews_from_cf(url, **kwargs):
+    results = []
+    id = kwargs['id']
+    # Call get_request with a URL parameter
+    json_result = get_request(url, id=id)
+    if json_result:
+        # Get the row list in JSON as dealers
+        reviews = json_result["body"]["data"]["docs"]
+        # For each dealer object
+        for review in reviews:            
+            # Create a DealerReview object with values in `doc` object
+            if review['purchase'] == True:
+                review_obj = DealerReview(car_make=review["car_make"], car_model=review["car_model"],
+                                    car_year=review["car_year"], dealership=review["dealership"],
+                                    name=review["name"], purchase=review["purchase"],
+                                    purchase_date=review["purchase_date"], review=review["review"],
+                                    sentiment = analyze_review_sentiments(review["review"]),
+                                    id=review['id'])
+                results.append(review_obj)
+            else:
+                review_obj = DealerReview(car_make='None', car_model='No car',
+                                    car_year=0, dealership=review["dealership"],
+                                    name=review["name"], purchase=review["purchase"],
+                                    purchase_date='', review=review["review"],
+                                    sentiment = analyze_review_sentiments(review["review"]),
+                                    id=review['id'])
+                results.append(review_obj)
     return results
+
 
 # Create a `get_request` to make HTTP GET requests
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
